@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,12 +41,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.pays.model.Country
 import com.example.pays.ui.theme.PaysTheme
 import com.example.pays.R
 import com.example.pays.data.DataSource
-
-
+import com.example.pays.ui.theme.WelcomeScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -54,11 +57,62 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PaysTheme {
-                PaysApp()
+
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "welcome") {
+
+                    composable("welcome") {
+                        WelcomeScreen(onExploreClick = {
+                            navController.navigate("pays_list")
+                        })
+                    }
+
+                    composable("pays_list") {
+                        PaysApp()
+                    }
+                }
             }
         }
     }
 }
+
+
+@Composable
+fun WelcomeScreen(onExploreClick: () -> Unit) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.globe),
+                contentDescription = null,
+                modifier = Modifier.size(150.dp)
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Karibu",
+                style = MaterialTheme.typography.displayLarge
+            )
+            Text(
+                text = "Découvrez les nations du monde",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            Button(
+                onClick = onExploreClick,
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                Text(text = "Voir les pays", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun PaysApp() {
@@ -179,6 +233,6 @@ fun PaysTopAppBar() {
 @Composable
 fun GreetingPreview() {
     PaysTheme() {
-        PaysApp()
+        WelcomeScreen(onExploreClick = {})
     }
 }
